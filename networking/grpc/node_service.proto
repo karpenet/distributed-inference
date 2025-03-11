@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+service NodeService {
+  rpc SendModel (ModelRequest) returns (Empty) {}
+  rpc SendCheckpoint (CheckpointRequest) returns (Tensor) {}
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+message Empty {}
+
+message Tensor {
+  bytes tensor_data = 1;
+  repeated int32 shape = 2;
+  string dtype = 3;
+}
+
+message CheckpointRequest {
+  bytes model_file = 1;
+}
+
+message ModelRequest {
+    bytes model_file = 1;
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
