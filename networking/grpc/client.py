@@ -12,8 +12,9 @@ class GRPCNode:
 
     def connect(self):
         self.channel = grpc.insecure_channel(
-            self.address,
-            channel_options=self.channel_options,
+            # self.address,
+            'localhost:50051'
+            # channel_options=self.channel_options,
         )
         self.stub = node_service_pb2_grpc.NodeServiceStub(self.channel)
 
@@ -21,7 +22,7 @@ class GRPCNode:
         pass
 
     def say_hello(self):
-        response = self.stub.SayHello(node_service_pb2.HelloRequest(name="Kedar"))
+        response = self.stub.SayHello(node_service_pb2.HelloRequest(name="KedarKarpe"))
         print("Greeter client received:", response.message)
 
     def send_checkpoint(self):
@@ -31,5 +32,6 @@ class GRPCNode:
 
 if __name__ == "__main__":
     node = GRPCNode()
+    node.connect()
     node.say_hello()
 

@@ -14,7 +14,7 @@ class GRPCServer(node_service_pb2_grpc.NodeServiceServicer):
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
         node_service_pb2_grpc.add_NodeServiceServicer_to_server(self, self.server)
         address = f"{self.host}:{self.port}"
-        self.server.add_insecure_port(address)
+        self.server.add_insecure_port('[::]:50051')
         self.server.start()
         print(f"Server started on port {self.port}.")
         self.server.wait_for_termination()
@@ -35,5 +35,5 @@ class GRPCServer(node_service_pb2_grpc.NodeServiceServicer):
 
 
 if __name__ == "__main__":
-    server = GRPCServer()
+    server = GRPCServer('10.0.0.173', '8000')
     server.start()
