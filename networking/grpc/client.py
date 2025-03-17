@@ -4,17 +4,16 @@ import node_service_pb2_grpc
 
 
 class GRPCNode:
-    def __init__(self):
+    def __init__(self, address):
         self.stub = None
-        self.address = None
+        self.address = address
         self.channel = None
         self.channel_options = []
 
     def connect(self):
         self.channel = grpc.insecure_channel(
-            # self.address,
-            'localhost:50051'
-            # channel_options=self.channel_options,
+            f"{self.address}:50051",
+            channel_options=self.channel_options,
         )
         self.stub = node_service_pb2_grpc.NodeServiceStub(self.channel)
 
@@ -25,10 +24,15 @@ class GRPCNode:
         response = self.stub.SayHello(node_service_pb2.HelloRequest(name="KedarKarpe"))
         print("Greeter client received:", response.message)
 
-    def send_checkpoint(self):
-        request = node_service_pb2.ModelRequest(model_file=model_data)
+    def upload_model(self, model):
+        request = node_service_pb2.ModelRequest(model_file=model)
         result = self.stub.CheckpointRequest(request)
-        print(f"Jetson {self.address} - Accuracy: {result.accuracy}, Loss: {result.loss}, Notes: {result.notes}")
+        print(result)
+
+    def upload_checkpoint(self, model_checkpoint):
+        request = node_service_pb2.ModelRequest(model_file=model_checkpoint)
+        result = self.stub.CheckpointRequest(request)
+        print(result)
 
 if __name__ == "__main__":
     node = GRPCNode()

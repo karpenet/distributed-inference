@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 import io
-import BaseBackend
+from ..backends import BaseBackend
+
 
 class JetsonBackend(BaseBackend):
     def pack_model(self, model: nn.Module):
