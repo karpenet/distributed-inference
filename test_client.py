@@ -2,6 +2,8 @@ import torch.nn as nn
 from networking.grpc.client import GRPCNode
 from backends.jetson.jetson_backend import JetsonBackend
 
+from distributed import 
+
 
 class SimpleModel(nn.Module):
     def __init__(self):
@@ -18,9 +20,12 @@ class SimpleModel(nn.Module):
 
 
 backend = JetsonBackend()
-packed_model = backend.pack_model(SimpleModel())
+model = SimpleModel()
+packed_model = backend.pack_model(model)
 
-node = GRPCNode('192.168.1.101')
+
+# node = GRPCNode('192.168.1.101')
+node = GRPCNode('localhost')
 node.connect()
-
-node.say_hello()
+node.upload_model(packed_model)
+# node.say_hello()

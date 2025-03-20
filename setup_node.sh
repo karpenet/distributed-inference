@@ -9,3 +9,6 @@ sudo nmcli con mod "Wired connection 1" ipv4.addresses 192.168.1.10$1/24
 sudo nmcli con mod "Wired connection 1" ipv4.method manual
 sudo nmcli con up "Wired connection 1"
 
+sudo ufw allow 50051
+
+

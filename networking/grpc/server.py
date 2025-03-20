@@ -1,14 +1,14 @@
 import grpc
 from concurrent import futures
 from networking.grpc import node_service_pb2
-import node_service_pb2_grpc
+from networking.grpc import node_service_pb2_grpc
 import torch
+from orchestration.node import Node
 
 
 class GRPCServer(node_service_pb2_grpc.NodeServiceServicer):
-    def __init__(self):
-        # self.host = host
-        # self.port = port
+    def __init__(self, node: Node):
+        self.node = node
         self.server = None
 
     def start(self):
@@ -16,7 +16,7 @@ class GRPCServer(node_service_pb2_grpc.NodeServiceServicer):
         node_service_pb2_grpc.add_NodeServiceServicer_to_server(self, self.server)
         self.server.add_insecure_port('[::]:50051')
         self.server.start()
-        print(f"Server started on port {self.port}.")
+        print("Server started on port 50051.")
         self.server.wait_for_termination()
 
     def stop(self):
@@ -25,7 +25,8 @@ class GRPCServer(node_service_pb2_grpc.NodeServiceServicer):
             self.server.wait_for_termination()
 
     def SendModel(self, request, context):
-        torch.jit.save(request.model_file, 'model.pt')
+        print("Received model bytes:", len(request.model_file))
+        self.node.download_model(request.model_file)
         return node_service_pb2.Empty()
         
     def SendCheckpoint(self, request, context):
@@ -33,9 +34,6 @@ class GRPCServer(node_service_pb2_grpc.NodeServiceServicer):
         tensor_data = None
         result = None
         return node_service_pb2.Tensor(tensor_data=tensor_data, shape=result.shape, dtype=str(result.dtype)) if result is not None else node_service_pb2.Tensor()
-
-    def SayHello(self, request, context):
-        return node_service_pb2.HelloReply(message=f"Hello, {request.name}!")
 
 
 if __name__ == "__main__":
